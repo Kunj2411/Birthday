@@ -86,7 +86,7 @@
         <p class="lead">In the quiet, steady way you move through life, you've given us roots and wings. Your gentleness, patience, and quiet humor make every ordinary day feel like a little storybook adventure. Today we celebrate you — your laughter, your guidance, your warm presence. May the coming year be filled with soft skies, good health, and simple joys that remind you how loved you are.</p>
 
         <div class="controls" style="margin-top:18px">
-          <button class="btn" id="btnUploadMusic">Upload & Play Music</button>
+          <button class="btn" id="btnToggleMusic">Play Music</button>
           <button class="btn ghost" id="btnToggleLights">Toggle Lights</button>
           <button class="btn" id="btnFly">Fly Balloons</button>
           <button class="btn" id="btnOpenLetter">Open Letter</button>
@@ -94,31 +94,26 @@
 
       </div>
 
-      <!-- Side preview: a soft framed placeholder (keeps layout balanced) -->
       <div style="display:grid;grid-template-rows:1fr auto;gap:12px">
         <figure class="card" style="padding:14px;display:flex;align-items:center;justify-content:center">
-          <img src="ghibli1.jpg" alt="Ghibli art" style="height:200px;width:100%;object-fit:cover;border-radius:10px" loading="lazy">
+          <img src="photo/img1.png" alt="Ghibli art" style="height:200px;width:100%;object-fit:cover;border-radius:10px" loading="lazy">
         </figure>
         <div style="display:flex;gap:8px">
           <button class="btn ghost" id="btnStartGame" style="flex:1">🎮 Enjoy the Day</button>
-          <button class="btn" id="btnUploadImages" style="flex:1">📷 Upload Photos</button>
         </div>
       </div>
     </header>
 
-    <!-- Gallery: user images will show here -->
     <section aria-label="Gallery" style="margin-top:18px">
       <div class="gallery" id="gallery">
-        <figure class="card"><img src="ghibli1.jpg" alt="Art 1" loading="lazy"></figure>
-        <figure class="card"><img src="ghibli2.jpg" alt="Art 2" loading="lazy"></figure>
-        <figure class="card"><img src="ghibli3.jpg" alt="Art 3" loading="lazy"></figure>
-        <figure class="card"><img src="ghibli4.jpg" alt="Art 4" loading="lazy"></figure>
-        <figure class="card"><img src="ghibli5.jpg" alt="Art 5" loading="lazy"></figure>
-        <figure class="card"><img src="ghibli6.jpg" alt="Art 6" loading="lazy"></figure>
+        <figure class="card"><img src="photo/img1.png" alt="Photo 1" loading="lazy"></figure>
+        <figure class="card"><img src="photo/img2.png" alt="Photo 2" loading="lazy"></figure>
+        <figure class="card"><img src="photo/img3.png" alt="Photo 3" loading="lazy"></figure>
+        <figure class="card"><img src="photo/img4.png" alt="Photo 4" loading="lazy"></figure>
+        <figure class="card"><img src="photo/img5.png" alt="Photo 5" loading="lazy"></figure>
       </div>
     </section>
 
-    <!-- Letter to Papa -->
     <section class="letter" id="letter" aria-label="Letter to Papa" style="display:none">
       <h2>A Letter to Papa</h2>
       <p>Dear Papa —
@@ -126,7 +121,6 @@
       Your kindness is the quiet map we follow. You teach us by example: to be patient, to laugh when things are small and strange, and to carry one another through ordinary days. I hope this year returns a fraction of the warmth you've given us. May your mornings be gentle, your evenings peaceful, and your heart full of the little wonders that make life rich. We love you — today and always.</p>
     </section>
 
-    <!-- Game -->
     <section class="gameWrap" aria-label="Balloon pop game">
       <div class="hud">
         <div class="pill">Score: <strong id="score">0</strong></div>
@@ -140,15 +134,10 @@
     </section>
 
     <footer>
-      Tip: Click any image to enlarge it locally. Upload your six Ghibli images or replace the filenames (ghibli1.jpg ... ghibli6.jpg) in the same folder as this HTML.
+      Tip: Click any image to enlarge it. Happy Birthday!
     </footer>
   </main>
 
-  <!-- Hidden inputs -->
-  <input id="musicInput" type="file" accept="audio/*" style="display:none">
-  <input id="imagesInput" type="file" accept="image/*" multiple style="display:none">
-
-  <!-- Overlay for end-of-round -->
   <div class="overlay" id="overlay">
     <div class="modal" id="modal">
       <h3 id="modalTitle">Round Over</h3>
@@ -164,31 +153,23 @@
 
   <script>
     // Elements
-    const btnUploadMusic = document.getElementById('btnUploadMusic');
-    const musicInput = document.getElementById('musicInput');
+    const btnToggleMusic = document.getElementById('btnToggleMusic');
     const bgm = document.getElementById('bgm');
-
     const btnToggleLights = document.getElementById('btnToggleLights');
     const btnFly = document.getElementById('btnFly');
     const btnOpenLetter = document.getElementById('btnOpenLetter');
-
-    const btnUploadImages = document.getElementById('btnUploadImages');
-    const imagesInput = document.getElementById('imagesInput');
     const gallery = document.getElementById('gallery');
-
     const btnStartGame = document.getElementById('btnStartGame');
     const startRound = document.getElementById('startRound');
     const stopRound = document.getElementById('stopRound');
     const playfield = document.getElementById('playfield');
     const scoreEl = document.getElementById('score');
     const timeEl = document.getElementById('time');
-
     const overlay = document.getElementById('overlay');
     const modalTitle = document.getElementById('modalTitle');
     const modalBody = document.getElementById('modalBody');
     const btnCloseModal = document.getElementById('btnCloseModal');
     const btnPlayAgain = document.getElementById('btnPlayAgain');
-
     const letter = document.getElementById('letter');
 
     // Audio / sound setup
@@ -219,15 +200,18 @@
       }catch(e){ /* audio might be blocked */ }
     }
 
-    // Music upload & play
-    btnUploadMusic.addEventListener('click', ()=> musicInput.click());
-    musicInput.addEventListener('change', (e)=>{
-      const file = e.target.files[0];
-      if(!file) return;
-      bgm.src = URL.createObjectURL(file);
-      bgm.loop = true;
-      bgm.play().catch(()=>{}); // user gesture already
-      try{ ensureAudioContext(); }catch(e){}
+    // Music play
+    bgm.src = 'music/music.mp3';
+    bgm.loop = true;
+    btnToggleMusic.addEventListener('click', () => {
+      ensureAudioContext();
+      if (bgm.paused) {
+        bgm.play().catch(e => console.error("Audio failed", e));
+        btnToggleMusic.textContent = 'Pause Music';
+      } else {
+        bgm.pause();
+        btnToggleMusic.textContent = 'Play Music';
+      }
     });
 
     // Lights toggle
@@ -262,22 +246,7 @@
 
     // Open/close letter
     btnOpenLetter.addEventListener('click', ()=>{ letter.style.display = letter.style.display === 'none' ? 'block' : 'none'; letter.scrollIntoView({behavior:'smooth'}); });
-
-    // Gallery upload
-    btnUploadImages.addEventListener('click', ()=> imagesInput.click());
-    imagesInput.addEventListener('change', (e)=>{
-      const files = Array.from(e.target.files).slice(0,12);
-      if(files.length===0) return;
-      gallery.innerHTML = '';
-      files.forEach(f=>{
-        const url = URL.createObjectURL(f);
-        const fig = document.createElement('figure'); fig.className='card';
-        const img = document.createElement('img'); img.src = url; img.alt = f.name; img.loading='lazy';
-        fig.appendChild(img); gallery.appendChild(fig);
-      });
-      window.scrollTo({top:0,behavior:'smooth'});
-    });
-
+    
     // Lightbox for images (simple)
     gallery.addEventListener('click', (e)=>{
       const img = e.target.closest('img');
@@ -291,27 +260,31 @@
     // ---- Game logic ----
     let score = 0; let timeLeft = 30; let spawnTimer = null; let countdownTimer = null; let running = false;
 
-    function resetGame(){ score = 0; timeLeft = 30; scoreEl(); timeEl(); playfield.innerHTML=''; }
-    function scoreEl(){ scoreEl = document.getElementById('score'); if(scoreEl) scoreEl.textContent = score; }
-    function timeEl(){ const t = document.getElementById('time'); if(t) t.textContent = timeLeft; }
+    function resetGame(){ 
+      score = 0; 
+      timeLeft = 30; 
+      scoreEl.textContent = score; 
+      timeEl.textContent = timeLeft; 
+      playfield.innerHTML=''; 
+    }
 
     function startGameRound(){
       if(running) return;
-      // resume audio context on first user action
       try{ ensureAudioContext(); }catch(e){}
 
-      running = true; resetGame();
-      // spawn balloons
-      spawnTimer = setInterval(()=> spawnBalloon(playfield), 750);
+      running = true; 
+      resetGame();
+      // MODIFIED: Spawn balloons less frequently (every 1.2 seconds)
+      spawnTimer = setInterval(()=> spawnBalloon(playfield), 1200);
       countdownTimer = setInterval(()=>{
-        timeLeft--; timeEl();
+        timeLeft--; 
+        timeEl.textContent = timeLeft;
         if(timeLeft<=0) endRound();
       },1000);
     }
 
     function endRound(){
       running = false; clearInterval(spawnTimer); clearInterval(countdownTimer); spawnTimer=null; countdownTimer=null;
-      // show modal with score
       modalTitle.textContent = 'Round Over';
       modalBody.textContent = `Lovely! You scored ${score} pop${score===1?'':'s'}.`;
       overlay.classList.add('show');
@@ -319,8 +292,8 @@
 
     function stopGameRound(){ if(!running) return; running=false; clearInterval(spawnTimer); clearInterval(countdownTimer); spawnTimer=null; countdownTimer=null; }
 
-    document.getElementById('startRound').addEventListener('click', startGameRound);
-    document.getElementById('stopRound').addEventListener('click', stopGameRound);
+    startRound.addEventListener('click', startGameRound);
+    stopRound.addEventListener('click', stopGameRound);
     btnStartGame.addEventListener('click', ()=>{ window.scrollTo({top:document.querySelector('.gameWrap').offsetTop-20,behavior:'smooth'}); startGameRound(); });
 
     btnCloseModal.addEventListener('click', ()=> overlay.classList.remove('show'));
@@ -330,28 +303,25 @@
       const b = document.createElement('div'); b.className='p-balloon';
       const colors = ['#ff9bb3','#9db4ff','#9be7c4','#ffd27a','#c8a7ff'];
       b.style.background = colors[Math.floor(Math.random()*colors.length)];
-      // random horizontal position
       const w = container.clientWidth; const x = Math.random()*(Math.max(0,w-60)); b.style.left = x + 'px';
-      // start below
       b.style.transform = 'translateY(120%)';
       container.appendChild(b);
 
       const dist = container.clientHeight + 240;
-      const dur = 3000 + Math.random()*3400;
-      // animate upward
+      // MODIFIED: Balloons now float slower
+      const dur = 5000 + Math.random() * 4000;
       const anim = b.animate([
         { transform: 'translateY(120%)', opacity:1 },
         { transform: `translateY(-${dist}px)`, opacity:1 }
       ], { duration: dur, easing: 'cubic-bezier(.22,.7,.3,1)' });
 
-      // click to pop
       const onPop = (ev)=>{
         ev.stopPropagation();
         if(!running && timeLeft<=0) return;
-        score++; scoreEl();
+        score++; 
+        scoreEl.textContent = score;
         popSound();
         anim.cancel();
-        // pop animation
         b.animate([{transform:'scale(1)'},{transform:'scale(.2)',opacity:0}],{duration:220,easing:'ease-out',fill:'forwards'}).onfinish = ()=> b.remove();
       };
       b.addEventListener('click', onPop);
@@ -359,15 +329,12 @@
       anim.onfinish = ()=> b.remove();
     }
 
-    // expose initial UI values
     resetGame();
 
-    // keyboard shortcuts: M to toggle music, L to toggle lights
     document.addEventListener('keydown',(e)=>{
-      if(e.key.toLowerCase()==='m'){ if(!bgm.src) musicInput.click(); else if(bgm.paused) bgm.play().catch(()=>{}); else bgm.pause(); }
+      if(e.key.toLowerCase()==='m'){ btnToggleMusic.click(); }
       if(e.key.toLowerCase()==='l'){ btnToggleLights.click(); }
     });
-
   </script>
 </body>
 </html>
